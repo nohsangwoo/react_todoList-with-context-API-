@@ -1,6 +1,9 @@
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
-
+import TodoTemplate from './componenets/TodoTemplate';
+import TodoHead from './componenets/TodoHead';
+import TodoList from './componenets/TodoList';
+import TodoCreate from './componenets/TodoCreate';
 // 이름에서 유추할수있듯 global 하게 적용할수있는 body css
 const GobalStyle = createGlobalStyle`
   body{
@@ -11,7 +14,11 @@ function App() {
   return (
     <>
       <GobalStyle />
-      <div>안녕하세요</div>
+      <TodoTemplate>
+        <TodoHead />
+        <TodoList />
+        <TodoCreate />
+      </TodoTemplate>
     </>
   );
 }
