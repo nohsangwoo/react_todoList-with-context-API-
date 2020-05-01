@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { MdAdd } from 'react-icons/md';
+import { useTodoDispatch, useTodoNextId } from '../TodoContext';
 
 const CircleButton = styled.button`
   background: #38d9a9;
@@ -26,13 +27,12 @@ const CircleButton = styled.button`
 
   font-size: 60px;
   color: white;
-  border-radius: 40px;
+  border-radius: 50%;
 
   border: none;
   outline: none;
 
   transition: 0.125s all ease-in;
-
   ${(props) =>
     props.open &&
     css`
@@ -46,6 +46,7 @@ const CircleButton = styled.button`
       transform: translate(-50%, 50%) rotate(45deg);
     `}
 `;
+
 const InsertFormPositioner = styled.div`
   width: 100%;
   bottom: 0;
@@ -53,10 +54,13 @@ const InsertFormPositioner = styled.div`
   position: absolute;
 `;
 
-const InsertForm = styled.div`
+const InsertForm = styled.form`
   background: #f8f9fa;
-  padding: 32px;
+  padding-left: 32px;
+  padding-top: 32px;
+  padding-right: 32px;
   padding-bottom: 72px;
+
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
   border-top: 1px solid #e9ecef;
@@ -74,13 +78,39 @@ const Input = styled.input`
 
 function TodoCreate() {
   const [open, setOpen] = useState(false);
+  const [value, setValue] = useState('');
+
+  const dispatch = useTodoDispatch();
+  const nextId = useTodoNextId();
+
   const onToggle = () => setOpen(!open);
+  const onChange = (e) => setValue(e.target.value);
+  const onSubmit = (e) => {
+    e.preventDefault(); // 새로고침 방지
+    dispatch({
+      type: 'CREATE',
+      todo: {
+        id: nextId.current,
+        text: value,
+        done: false,
+      },
+    });
+    setValue('');
+    setOpen(false);
+    nextId.current += 1;
+  };
+
   return (
     <>
       {open && (
         <InsertFormPositioner>
-          <InsertForm>
-            <Input placeholder="할일을 입력 후, Enter 를 누르세요" autofocus />
+          <InsertForm onSubmit={onSubmit}>
+            <Input
+              autoFocus
+              placeholder="할 일을 입력 후, Enter 를 누르세요"
+              onChange={onChange}
+              value={value}
+            />
           </InsertForm>
         </InsertFormPositioner>
       )}
@@ -91,4 +121,4 @@ function TodoCreate() {
   );
 }
 
-export default TodoCreate;
+export default React.memo(TodoCreate);

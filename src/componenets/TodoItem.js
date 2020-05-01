@@ -1,9 +1,39 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { MdDone, MdDelete } from 'react-icons/md';
+import { useTodoDispatch } from '../TodoContext';
 
-// 왼쪽의 원모양 check를     보여주는 컴포넌트
-const Checkcircle = styled.div`
+// 오른쪽의 쓰레기통아이콘을 보여주는 컴포넌트
+const Remove = styled.div`
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dee2e6;
+  font-size: 24px;
+  cursor: pointer;
+  &hover {
+    color: #ff6b6b;
+  }
+`;
+
+// 해당 컴포넌트에서 위 3개의 컴포넌트를 감싸는 큰 container
+const TodoItemBlock = styled.div`
+  display: flex;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+
+  /* TodoItemBlock에 커서를 올렸을때 Remove가 보이게 설정함 */
+  &:hover {
+    ${Remove} {
+      opacity: 1;
+    }
+  }
+`;
+
+// 왼쪽의 원모양 check를  보여주는 컴포넌트
+const CheckCircle = styled.div`
   width: 32px;
   height: 32px;
   border-radius: 16px;
@@ -34,44 +64,20 @@ const Text = styled.div`
     `}
 `;
 
-// 오른쪽의 쓰레기통아이콘을 보여주는 컴포넌트
-const Remove = styled.div`
-  opacity: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #dee2e6;
-  font-size: 24px;
-  cursor: pointer;
-  &hover {
-    color: #ff6b6b;
-  }
-`;
-
-// 해당 컴포넌트에서 위 3개의 컴포넌트를 감싸는 큰 container
-const TodoItemBlock = styled.div`
-  display: flex;
-  align-items: center;
-  padding-top: 12px;
-  padding-bottom: 12px;
-
-  /* TodoItemBlock에 커서를 올렸을때 Remove가 보이게 설정함 */
-  &:hover {
-    ${Remove} {
-      opacity: 1;
-    }
-  }
-`;
 function TodoItem({ id, done, text }) {
+  const dispatch = useTodoDispatch();
+  const onToggle = () => dispatch({ type: 'TOGGLE', id });
+  const onRemove = () => dispatch({ type: 'REMOVE', id });
   return (
     <TodoItemBlock>
-      <Checkcircle done={done}>{done && <MdDone />}</Checkcircle>
+      <CheckCircle done={done} onClick={onToggle}>
+        {done && <MdDone />}
+      </CheckCircle>
       <Text done={done}>{text}</Text>
-      <Remove>
+      <Remove onClick={onRemove}>
         <MdDelete />
       </Remove>
     </TodoItemBlock>
   );
 }
-
-export default TodoItem;
+export default React.memo(TodoItem);
